@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Important Question 👀</title>
+  <style>
+    :root {
+      --bg1:#0f1020;
+      --bg2:#1a1b3a;
+      --card:#121328cc;
+      --text:#f7f7ff;
+      --muted:#b9bbd6;
+      --yes:#35d07f;
+      --no:#ff5d7a;
+      --accent:#ffb3d9;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+      --tap: 16px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(1200px 600px at 20% 10%, #ff4aa933 0%, transparent 50%),
+        radial-gradient(900px 500px at 90% 30%, #6c63ff2e 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      color:var(--text);
+      overflow:hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wrap{
+      width:min(520px, calc(100vw - 28px));
+      position:relative;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 20px 18px;
+      position:relative;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .badge{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;
+      background: rgba(255,179,217,.18);
+      border: 1px solid rgba(255,179,217,.35);
+      font-size:22px;
+    }
+    h1{
+      font-size: 20px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stage{
+      margin-top:14px;
+      min-height: 190px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      justify-content:center;
+    }
+
+    .bubble{
+      background: rgba(18,19,40,.55);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 14px 14px;
+      line-height:1.3;
+      font-size: 16px;
+    }
+    .bubble small{
+      display:block;
+      color: var(--muted);
+      margin-top:6px;
+      font-size: 13px;
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      margin-top:14px;
+      align-items:stretch;
+    }
+    button{
+      flex:1;
+      border:none;
+      border-radius: 16px;
+      padding: 14px 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor:pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      transform: translateZ(0);
+      transition: transform .12s ease, filter .12s ease;
+      touch-action: manipulation;
+    }
+    button:active{ transform: scale(.98); filter: brightness(.98); }
+
+    .yes{ background: linear-gradient(180deg, #49f29a, var(--yes)); color:#042014; }
+    .no{  background: linear-gradient(180deg, #ff86a0, var(--no)); color:#24010a; position:relative; }
+
+    .footer{
+      margin-top:12px;
+      color: rgba(185,187,214,.85);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* floating hearts */
+    .heart{
+      position:absolute;
+      font-size: 16px;
+      opacity:.0;
+      animation: floatUp 1.3s ease forwards;
+      pointer-events:none;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
+    }
+    @keyframes floatUp{
+      0%{ transform: translateY(10px) scale(.9); opacity:0; }
+      15%{ opacity:1; }
+      100%{ transform: translateY(-140px) scale(1.15); opacity:0; }
+    }
+
+    /* modal */
+    .modal{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    .modal.show{ display:flex; }
+    .modalCard{
+      width:min(520px, calc(100vw - 28px));
+      background: rgba(20,21,45,.92);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      text-align:center;
+    }
+    .big{
+      font-size: 22px;
+      margin: 6px 0 8px;
+    }
+    .cute{
+      color: var(--muted);
+      font-size: 14px;
+      margin:0 0 14px;
+    }
+    .ok{
+      background: linear-gradient(180deg, #ffd1e6, #ffb3d9);
+      color:#2b0d1a;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="top">
+        <div class="badge">💌</div>
+        <div>
+          <h1 id="title">Quick Question…</h1>
+          <p class="sub" id="sub">Please tap carefully. Your choices matter. (Probably.)</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="bubble" id="bubble">
+          Hey Loveeee 😌<br>
+          This is just another normal link yk.
+          <small>(Nothing suspicious happening here okayy!!.)</small>
+        </div>
+
+        <div class="actions" id="actions">
+          <button class="yes" id="yesBtn">Continue</button>
+          <button class="no" id="noBtn">Close</button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span id="status">Status: calm & innocent ✅</span>
+        <span id="counter">Step 1/6</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modalCard">
+      <div class="big" id="modalTitle">💖 Yay!</div>
+      <p class="cute" id="modalText">You just made my entire year. Valentine locked in 🥰</p>
+      <button class="ok" id="okBtn" style="width:100%; padding:14px 12px; border-radius:16px; font-weight:800;">Don't you just have the best boyfriend😌</button>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const bubble  = document.getElementById('bubble');
+  const title   = document.getElementById('title');
+  const sub     = document.getElementById('sub');
+  const status  = document.getElementById('status');
+  const counter = document.getElementById('counter');
+  const yesBtn  = document.getElementById('yesBtn');
+  const noBtn   = document.getElementById('noBtn');
+  const card    = document.getElementById('card');
+
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalText  = document.getElementById('modalText');
+  const okBtn      = document.getElementById('okBtn');
+
+  let step = 1;
+
+  const steps = [
+    {
+      title: "Quick Question…",
+      sub: "Please tap carefully. Your choices matter. (Probably.)",
+      bubble: `Hey Loveee 😌<br>This is just another normal link yk.<small>(Nothing suspicious happening here.)</small>`,
+      yes: "Continue",
+      no: "Close"
+    },
+    {
+      title: "Tiny Update",
+      sub: "Your ‘Close’ button has been… reviewed.",
+      bubble: `Okay so I lied a little 🙂<br>It is my Valentine mission since I cant see you.`,
+      yes: "Proceed",
+      no: "Only one option"
+    },
+    {
+      title: "Choose Wisely",
+      sub: "Your options have been approved by Me™",
+      bubble: `Before we continue, pick an option:<br><small>Option A: Be cute • Option B: Be extra cute</small>`,
+      yes: "A",
+      no: "B"
+    },
+    {
+      title: "System Notice",
+      sub: "Leaving is currently unavailable.",
+      bubble: `If you're trying to escape…<br><small>Nice try 😌</small>`,
+      yes: "Ok fine",
+      no: "I refuse"
+    },
+    {
+      title: "Real Question Time 💘",
+      sub: "No pressure. Only romance.",
+      bubble: `Will you be my Valentine? 🥺<small>(As my girlfriend you already are… but let me be dramatic.)</small>`,
+      yes: "YES 💖",
+      no: "No, but also yes"
+    },
+    {
+      title: "Correct ✅",
+      sub: "Answer saved. Celebration loading…",
+      bubble: `Great choice.<br><small>We will now proceed to: cuddles, snacks, and me showing off that you said yes 😌</small>`,
+      yes: "Finish",
+      no: "Finish"
+    }
+  ];
+
+  function setStep(n){
+    step = n;
+    const s = steps[step-1];
+    title.textContent = s.title;
+    sub.textContent = s.sub;
+    bubble.innerHTML = s.bubble;
+    yesBtn.textContent = s.yes;
+    noBtn.textContent = s.no;
+    counter.textContent = `Step ${step}/6`;
+
+    if(step === 1) status.textContent = "Status: calm & innocent ✅";
+    if(step === 2) status.textContent = "Status: slightly suspicious 👀";
+    if(step === 3) status.textContent = "Status: They are both cute";
+    if(step === 4) status.textContent = "Status: Not even worth the try love";
+    if(step === 5) status.textContent = "Status: romance in progress 💘";
+    if(step === 6) status.textContent = "Status: locked in 🔒💖";
+  }
+
+  function popHeart(x, y){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = Math.random() > 0.5 ? '💖' : '💘';
+    h.style.left = (x - 8) + 'px';
+    h.style.top  = (y - 10) + 'px';
+    document.body.appendChild(h);
+    h.addEventListener('animationend', () => h.remove());
+  }
+
+  // Make the "No" button playfully fail sometimes, but keep it respectful.
+  // On step 5, "No" triggers a funny message + re-asks (she can still close the tab any time).
+  function dodgeNo(){
+    const rect = card.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
+
+    // random new position within the card bounds (mobile friendly)
+    const maxX = rect.width - btnRect.width - 20;
+    const maxY = rect.height - btnRect.height - 20;
+
+    const x = Math.max(10, Math.floor(Math.random()*maxX));
+    const y = Math.max(10, Math.floor(Math.random()*maxY));
+
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = x + 'px';
+    noBtn.style.top  = y + 'px';
+  }
+
+  // Reset layout for buttons (so they don't overlap in early steps)
+  function resetButtonsLayout(){
+    const actions = document.getElementById('actions');
+    noBtn.style.position = 'relative';
+    noBtn.style.left = 'auto';
+    noBtn.style.top  = 'auto';
+    actions.style.position = 'relative';
+  }
+
+  yesBtn.addEventListener('click', (e) => {
+    popHeart(e.clientX, e.clientY);
+
+    if(step < 6){
+      resetButtonsLayout();
+      setStep(step + 1);
+
+      // On step 4 and 5, start dodging a bit for fun
+      if(step === 4 || step === 5){
+        // keep no button dodgy
+        setTimeout(() => dodgeNo(), 150);
+      }
+      return;
+    }
+
+    // Finish -> show modal
+    modalTitle.textContent = "💖 Valentine secured!";
+    modalText.textContent = "See you on Valentine’s Day 😌 (Can't wait to see you pretty princess!)";
+    modal.classList.add('show');
+  });
+
+  noBtn.addEventListener('click', (e) => {
+    popHeart(e.clientX, e.clientY);
+
+    if(step <= 2){
+      // “Close” fails early
+      bubble.innerHTML = `Hmm… that button is decorative 😌<small>(Please continue.)</small>`;
+      return;
+    }
+
+    if(step === 3){
+      bubble.innerHTML = `Both options lead to the same place 🥰<small>(Welcome to my mastermind plan.)</small>`;
+      setTimeout(() => setStep(4), 700);
+      setTimeout(() => dodgeNo(), 900);
+      return;
+    }
+
+    if(step === 4){
+      bubble.innerHTML = `Escape attempt detected 🚨<small>Re-routing you to romance…</small>`;
+      dodgeNo();
+      return;
+    }
+
+    if(step === 5){
+      // Respectful: acknowledge "no" but keep it playful and re-ask
+      bubble.innerHTML = `No? 😭<br><small>Okay valid… but I have a counter-offer: YES 💖</small>`;
+      dodgeNo();
+      return;
+    }
+
+    // step 6
+    modalTitle.textContent = "💖 Valentine secured!";
+    modalText.textContent = "You pressed the other finish button. Still counts 😌";
+    modal.classList.add('show');
+  });
+
+  // Make "No" dodge on hover/move (works on desktop; harmless on mobile)
+  noBtn.addEventListener('mousemove', () => {
+    if(step >= 4) dodgeNo();
+  });
+  noBtn.addEventListener('touchstart', () => {
+    if(step >= 4) dodgeNo();
+  }, {passive:true});
+
+  okBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+    bubble.innerHTML = `Message delivered ✅<small>Now go be cute to your boyfriend 😌</small>`;
+  });
+
+  // start
+  setStep(1);
+})();
+</script>
+</body>
+</html>
